@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Включает полный клон репозитория для корректного анализа
+          fetch-depth: 0  
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
@@ -34,8 +34,8 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          sonar-scanner.bat -Dsonar.organization=ВАША_ОРГАНИЗАЦИЯ `
-                            -Dsonar.projectKey=ВАШ_КЛЮЧ_ПРОЕКТА `
+          sonar-scanner.bat -Dsonar.organization=Warnabis `
+                            -Dsonar.projectKey=Warnabis_Java `
                             -Dsonar.sources=src `
                             -Dsonar.host.url=https://sonarcloud.io `
                             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
