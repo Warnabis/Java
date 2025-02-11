@@ -34,8 +34,8 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          sonar-scanner.bat -Dsonar.organization=Warnabis `
-                            -Dsonar.projectKey=Warnabis_Java `
-                            -Dsonar.sources=src `
-                            -Dsonar.host.url=https://sonarcloud.io `
+          sonar-scanner.bat -Dsonar.organization=Warnabis
+                            -Dsonar.projectKey=Warnabis_Java
+                            -Dsonar.sources=src
+                            -Dsonar.host.url=https://sonarcloud.io
                             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
