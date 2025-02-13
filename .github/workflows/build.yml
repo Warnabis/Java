@@ -33,11 +33,7 @@ jobs:
       - name: Run SonarScanner
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        shell: pwsh
+        shell: cmd
         run: |
-          sonar-scanner.bat `
-            -Dsonar.organization=Warnabis `
-            -Dsonar.projectKey=Warnabis_Java `
-            -Dsonar.sources=src `
-            -Dsonar.host.url=https://sonarcloud.io `
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+          sonar-scanner.bat -Dsonar.organization=Warnabis -Dsonar.projectKey=Warnabis_Java -Dsonar.sources=src -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
