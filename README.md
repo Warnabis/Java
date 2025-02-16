@@ -5,4 +5,5 @@
 + Система отзывов и оценки здания
 + История просмотренных зданий
 + Вывод ближайших зданий
+
 SonarCloud: https://sonarcloud.io/project/overview?id=Warnabis_Java
