@@ -1,33 +1,36 @@
 package com.example.FindBuilding.controller;
 
 import com.example.FindBuilding.models.Building;
+import com.example.FindBuilding.services.BuildingService;
+import java.util.List;
 import org.springframework.web.bind.annotation.*;
+
+@SuppressWarnings("checkstyle:MissingJavadocMethod")
 
 @RestController
 @RequestMapping("/building")
 public class BuildingController {
+  private final BuildingService buildingService;
 
-    @GetMapping
-    public Building getBuilding(
-            @RequestParam String name,
-            @RequestParam String address,
-            @RequestParam String workingHours,
-            @RequestParam Float rating,
-            @RequestParam Float coordinateX,
-            @RequestParam Float coordinateZ) {
+  public BuildingController(BuildingService buildingService) {
+    this.buildingService = buildingService;
+  }
 
-        return new Building(name, address, workingHours, rating, coordinateX, coordinateZ);
-    }
+  @GetMapping
+  public List<Building> getBuildings(
+      @RequestParam(required = false) String name,
+      @RequestParam(required = false) String address,
+      @RequestParam(required = false) String workingHours,
+      @RequestParam(required = false) Float rating,
+      @RequestParam(required = false) Float coordinateX,
+      @RequestParam(required = false) Float coordinateZ) {
 
-    @GetMapping("/{id}")
-    public Building getBuildingById(@PathVariable String id) {
-        return new Building(
-                "Building with id " + id,
-                "Unknown Address",
-                "9:00 - 18:00",
-                4.5f,
-                50.0f,
-                30.0f
-        );
-    }
+    return buildingService.filterBuildings(name, address, workingHours,
+      rating, coordinateX, coordinateZ);
+  }
+
+  @GetMapping("/{name}")
+  public Building getBuildingByName(@PathVariable String name) {
+    return buildingService.findByName(name).orElse(null);
+  }
 }
