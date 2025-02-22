@@ -1,4 +1,4 @@
-package com.example.FindBuilding.models;
+package com.example.findbuilding.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
