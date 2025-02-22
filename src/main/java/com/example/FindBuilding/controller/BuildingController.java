@@ -1,4 +1,4 @@
-package com.example.FindBuilding.controller;
+package com.example.findbuilding.controller;
 
 import com.example.FindBuilding.models.Building;
 import com.example.FindBuilding.services.BuildingService;
