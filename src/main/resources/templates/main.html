@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Главное меню</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header>
+    <h1>FindBuilding</h1>
+    <div th:if="${isAuthenticated}">
+        <p>Вы вошли как: <span th:text="${username}"></span></p>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">Выйти</button>
+        </form>
+        <a th:if="${isAdmin}" href="/building"><button>Управление зданиями</button></a>
+    </div>
+    <div th:unless="${isAuthenticated}">
+        <a href="/login"><button>Войти</button></a>
+        <a href="/registerMain"><button>Регистрация</button></a>
+    </div>
+</header>
+<main>
+    <h2>Ближайшие здания</h2>
+    <div class="building-list">
+        <div class="building" th:each="building : ${buildings}">
+            <h3 th:text="${building.name}"></h3>
+            <p>Адрес: <span th:text="${building.address}"></span></p>
+            <p>Рейтинг: <span th:text="${building.rating}"></span></p>
+            <p>Время работы: <span th:text="${building.workingHours}"></span></p>
+            <a th:if="${isAuthenticated}" th:href="@{/building/{id}(id=${building.id})}">
+                <button>Оставить отзыв</button>
+            </a>
+
+        </div>
+    </div>
+</main>
+</body>
+</html>

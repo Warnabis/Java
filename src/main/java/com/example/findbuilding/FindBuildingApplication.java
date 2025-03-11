@@ -8,19 +8,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class FindBuildingApplication {
-  private static final Logger logger = LoggerFactory.getLogger(FindBuildingApplication.class);
+    private static final Logger logger = LoggerFactory.getLogger(FindBuildingApplication.class);
 
-  public static void main(String[] args) {
-    SpringApplication.run(FindBuildingApplication.class, args);
+    public static void main(String[] args) {
+        SpringApplication.run(FindBuildingApplication.class, args);
 
-    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      logger.info("Shutting down gracefully...");
-      try {
-        TimeUnit.SECONDS.sleep(2);
-      } catch (InterruptedException e) {
-        logger.error("Shutdown interrupted", e);
-        Thread.currentThread().interrupt();
-      }
-    }));
-  }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.info("Shutting down gracefully...");
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                logger.error("Shutdown interrupted", e);
+                Thread.currentThread().interrupt();
+            }
+        }));
+    }
 }

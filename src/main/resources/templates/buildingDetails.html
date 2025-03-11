@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Здание <span th:text="${building.name}"></span></title>
+</head>
+<body>
+
+<h1 th:text="${building.name}"></h1>
+<p th:text="${building.address}"></p>
+<p>Часы работы: <span th:text="${building.workingHours}"></span></p>
+<p>Рейтинг: <span th:text="${building.rating}"></span></p>
+
+<h2>Отзывы</h2>
+<ul>
+    <li th:each="review : ${reviews}">
+        <p><strong th:text="${review.user.username}"></strong>: <span th:text="${review.rating}"></span>/5</p>
+        <p th:text="${review.comment}"></p>
+    </li>
+</ul>
+
+<h3>Оставить отзыв</h3>
+<form th:action="@{/building/{id}/addReview(id=${building.id})}" method="post" th:object="${newReview}">
+    <label for="rating">Рейтинг (1-5):</label>
+    <input type="number" id="rating" name="rating" min="1" max="5" th:value="*{rating}" required><br>
+
+    <label for="comment">Комментарий:</label>
+    <textarea id="comment" name="comment" th:value="*{comment}" required></textarea><br>
+
+    <button type="submit">Отправить отзыв</button>
+</form>
+
+<!-- Кнопка для возвращения на главную страницу -->
+<a href="/" class="btn btn-primary">Вернуться на главную</a>
+
+</body>
+</html>

@@ -1,43 +1,77 @@
 package com.example.findbuilding.services;
 
 import com.example.findbuilding.models.Building;
-import java.util.ArrayList;
+import com.example.findbuilding.models.User;
+import com.example.findbuilding.repositories.BuildingRepository;
+import com.example.findbuilding.repositories.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
-@SuppressWarnings("checkstyle:MissingJavadocMethod")
-
 @Service
 public class BuildingService {
-  private final List<Building> buildings = new ArrayList<>();
 
-  public BuildingService() {
-    buildings.add(new Building("A", "Address 1",
-        "08:00 - 22:00", 4.5f, 10f, 20f));
-    buildings.add(new Building("B", "Address 2",
-        "09:00 - 20:00", 4.2f, 30f, 40f));
-    buildings.add(new Building("A", "Address 3",
-        "10:00 - 21:00", 4.8f, 50f, 60f));
-  }
+    private final UserRepository userRepository;
+    private final BuildingRepository buildingRepository;
 
-  public List<Building> list() {
-    return buildings;
-  }
+    public BuildingService(BuildingRepository buildingRepository, UserRepository userRepository) {
+        this.buildingRepository = buildingRepository;
+        this.userRepository = userRepository;
+    }
 
-  public List<Building> filterBuildings(String name, String address, String workingHours,
-                                        Float rating, Float coordinateX, Float coordinateZ) {
-    return buildings.stream()
-      .filter(b -> name == null || b.getName().equalsIgnoreCase(name))
-      .filter(b -> address == null || b.getAddress().equalsIgnoreCase(address))
-      .filter(b -> workingHours == null || b.getWorkingHours().equalsIgnoreCase(workingHours))
-      .filter(b -> rating == null || b.getRating().equals(rating))
-      .filter(b -> coordinateX == null || b.getCoordinateX().equals(coordinateX))
-      .filter(b -> coordinateZ == null || b.getCoordinateZ().equals(coordinateZ))
-      .toList();
-  }
+    public List<Building> getAllBuildings() {
+        return buildingRepository.findAll();
+    }
 
-  public Optional<Building> findByName(String name) {
-    return buildings.stream().filter(b -> b.getName().equalsIgnoreCase(name)).findFirst();
-  }
+    public Optional<Building> getBuildingById(Long id) {
+        return buildingRepository.findById(id);
+    }
+
+    public Building saveBuilding(Building building) {
+        return buildingRepository.save(building);
+    }
+
+    public void deleteBuilding(Long id) {
+        if (buildingRepository.existsById(id)) {
+            buildingRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Здание с ID " + id + " не найдено");
+        }
+    }
+
+    public List<Building> getAllBuildings(Long id, String name, String address, String workingHours,
+                                          Double rating, Double coordinateX, Double coordinateZ) {
+
+        return buildingRepository.findAll().stream()
+          .filter(building -> id == null || building.getId().equals(id))
+          .filter(building -> name == null || building.getName().equalsIgnoreCase(name))
+          .filter(building -> address == null || building.getAddress().equalsIgnoreCase(address))
+          .filter(building -> workingHours == null
+            || building.getWorkingHours().equalsIgnoreCase(workingHours))
+          .filter(building -> rating == null || building.getRating().equals(rating))
+          .filter(building -> coordinateX == null || building.getCoordinateX().equals(coordinateX))
+          .filter(building -> coordinateZ == null || building.getCoordinateZ().equals(coordinateZ))
+          .toList();
+    }
+
+    public List<Building> getNearestBuildings(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+
+        return buildingRepository.findAll().stream()
+          .sorted((b1, b2) -> {
+              double dist1 = getDistance(user.getCoordinateX(),
+                  user.getCoordinateZ(), b1.getCoordinateX(), b1.getCoordinateZ());
+              double dist2 = getDistance(user.getCoordinateX(),
+                  user.getCoordinateZ(), b2.getCoordinateX(), b2.getCoordinateZ());
+              return Double.compare(dist1, dist2);
+          })
+          .toList();
+    }
+
+
+    private double getDistance(double x1, double z1, double x2, double z2) {
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(z2 - z1, 2));
+    }
+
 }
