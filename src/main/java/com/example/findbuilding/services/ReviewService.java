@@ -30,14 +30,12 @@ public class ReviewService {
 
     public Review saveReview(Review review) {
         try {
-            System.out.println("Saving review: " + review);
             return reviewRepository.save(review);
         } catch (ObjectOptimisticLockingFailureException e) {
             if (review.getId() == null) {
                 throw new
                   IllegalStateException("Cannot handle optimistic locking for a new review", e);
             }
-            System.out.println("Handling optimistic locking for review with ID: " + review.getId());
             Review freshReview = reviewRepository.findById(review.getId()).orElseThrow();
             freshReview.setComment(review.getComment());
             freshReview.setRating(review.getRating());
