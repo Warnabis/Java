@@ -27,6 +27,8 @@ public class BuildingController {
     private final ReviewService reviewService;
     private final UserService userService;
 
+    private static final String REDIRECT_BUILDING = "redirect:/building";
+
     public BuildingController(BuildingService buildingService,
                               ReviewService reviewService, UserService userService) {
         this.buildingService = buildingService;
@@ -60,7 +62,7 @@ public class BuildingController {
             model.addAttribute("newReview", new Review());
             return "buildingDetails";
         }
-        return "redirect:/building";
+        return REDIRECT_BUILDING;
     }
 
     @PostMapping("/{id}/addReview")
@@ -72,9 +74,8 @@ public class BuildingController {
         Optional<Building> buildingOpt = buildingService.getBuildingById(id);
         if (buildingOpt.isEmpty()) {
             model.addAttribute("error", "Здание не найдено.");
-            return "redirect:/building";
+            return REDIRECT_BUILDING;
         }
-        Building building = buildingOpt.get();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -84,6 +85,8 @@ public class BuildingController {
             model.addAttribute("error", "Пользователь не найден.");
             return "redirect:/login";
         }
+
+        Building building = buildingOpt.get();
 
         Review newReview = new Review();
         newReview.setRating(rating);
@@ -100,19 +103,19 @@ public class BuildingController {
         model.addAttribute("reviews", building.getReviews());
         model.addAttribute("newReview", new Review());
 
-        return "redirect:/building/" + id;
+        return REDIRECT_BUILDING + id;
     }
 
     @PostMapping("/create")
     public String createBuilding(@ModelAttribute Building building) {
         buildingService.saveBuilding(building);
-        return "redirect:/building";
+        return REDIRECT_BUILDING;
     }
 
     @PostMapping("/delete/{id}")
     public String deleteBuilding(@PathVariable Long id) {
         buildingService.deleteBuilding(id);
-        return "redirect:/building";
+        return REDIRECT_BUILDING;
     }
 
     @PostMapping("/update/{id}")
@@ -128,6 +131,6 @@ public class BuildingController {
             building.setCoordinateZ(updatedBuilding.getCoordinateZ());
             buildingService.saveBuilding(building);
         }
-        return "redirect:/building";
+        return REDIRECT_BUILDING;
     }
 }
