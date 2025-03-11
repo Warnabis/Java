@@ -34,9 +34,7 @@ public class BuildingService {
     public void deleteBuilding(Long id) {
         if (buildingRepository.existsById(id)) {
             buildingRepository.deleteById(id);
-        } else {
-            throw new RuntimeException("Здание с ID " + id + " не найдено");
-        }
+        } 
     }
 
     public List<Building> getAllBuildings(Long id, String name, String address, String workingHours,
