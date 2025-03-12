@@ -87,7 +87,6 @@ public class BuildingController {
         }
 
         Building building = buildingOpt.get();
-
         Review newReview = new Review();
         newReview.setRating(rating);
         newReview.setComment(comment);
@@ -99,12 +98,18 @@ public class BuildingController {
         building.updateRating();
         buildingService.saveBuilding(building);
 
+        if (!user.getFavoriteBuildings().contains(building)) {
+            user.getFavoriteBuildings().add(building);
+            userService.saveUser(user);
+        }
+
         model.addAttribute("building", building);
         model.addAttribute("reviews", building.getReviews());
         model.addAttribute("newReview", new Review());
 
-        return REDIRECT_BUILDING + id;
+        return "redirect:/building/" + id;
     }
+
 
     @PostMapping("/create")
     public String createBuilding(@ModelAttribute Building building) {
@@ -133,4 +138,18 @@ public class BuildingController {
         }
         return REDIRECT_BUILDING;
     }
+
+    @PostMapping("/deleteReview")
+    public String deleteReview(@PathVariable Long id, @RequestParam Long reviewId, Authentication authentication) {
+        User currentUser = userService.findByUsername(authentication.getName()).orElse(null);
+        if (currentUser != null) {
+            Review review = reviewService.getReviewById(reviewId).orElseThrow(() ->
+              new IllegalArgumentException("Отзыв не найден"));
+            if (review.getUser().equals(currentUser)) {
+                reviewService.deleteReview(reviewId);
+            }
+        }
+        return "redirect:/building" + id;
+    }
+
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Главное меню</title>
     <link rel="stylesheet" href="/css/style.css">
@@ -9,10 +9,15 @@
     <h1>FindBuilding</h1>
     <div th:if="${isAuthenticated}">
         <p>Вы вошли как: <span th:text="${username}"></span></p>
-        <form th:action="@{/logout}" method="post">
+        <form action="/logout" method="post">
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
             <button type="submit">Выйти</button>
         </form>
         <a th:if="${isAdmin}" href="/building"><button>Управление зданиями</button></a>
+        <form action="/users/deleteAccount" method="post">
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+            <button type="submit">Удалить аккаунт</button>
+        </form>
     </div>
     <div th:unless="${isAuthenticated}">
         <a href="/login"><button>Войти</button></a>
@@ -30,7 +35,6 @@
             <a th:if="${isAuthenticated}" th:href="@{/building/{id}(id=${building.id})}">
                 <button>Оставить отзыв</button>
             </a>
-
         </div>
     </div>
 </main>

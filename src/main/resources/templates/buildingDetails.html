@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Здание <span th:text="${building.name}"></span></title>
 </head>
@@ -15,6 +15,12 @@
     <li th:each="review : ${reviews}">
         <p><strong th:text="${review.user.username}"></strong>: <span th:text="${review.rating}"></span>/5</p>
         <p th:text="${review.comment}"></p>
+        <div th:if="${review.user.username == username}">
+            <form th:action="@{/building/{id}/deleteReview(id=${building.id})}" method="post">
+                <input type="hidden" name="reviewId" th:value="${review.id}">
+                <button type="submit">Удалить отзыв</button>
+            </form>
+        </div>
     </li>
 </ul>
 
@@ -29,7 +35,6 @@
     <button type="submit">Отправить отзыв</button>
 </form>
 
-<!-- Кнопка для возвращения на главную страницу -->
 <a href="/" class="btn btn-primary">Вернуться на главную</a>
 
 </body>

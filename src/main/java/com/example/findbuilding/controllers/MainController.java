@@ -5,7 +5,9 @@ import com.example.findbuilding.models.Role;
 import com.example.findbuilding.models.User;
 import com.example.findbuilding.services.BuildingService;
 import com.example.findbuilding.services.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -13,9 +15,19 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 
 @Controller
 public class MainController {
+
+    @ResponseBody
+    public String home(HttpServletResponse response) {
+        response.setHeader(HttpHeaders.CACHE_CONTROL,
+            "no-store, no-cache, must-revalidate, max-age=0");
+        response.setHeader(HttpHeaders.PRAGMA, "no-cache");
+        return "redirect:/";
+    }
 
     private final BuildingService buildingService;
     private final UserService userService;
@@ -30,7 +42,7 @@ public class MainController {
     public String mainPage(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAuthenticated = auth != null && auth.isAuthenticated()
-            && !auth.getName().equals("anonymousUser");
+          && !auth.getName().equals("anonymousUser");
         String username = isAuthenticated ? auth.getName() : null;
         boolean isAdmin = false;
         List<Building> buildings;
@@ -73,4 +85,5 @@ public class MainController {
         userService.registerUser(user);
         return "redirect:/";
     }
+
 }
