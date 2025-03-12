@@ -86,7 +86,7 @@ public class BuildingService {
     @Transactional
     public void removeBuildingFromFavorites(Long userId, Long buildingId) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
+            .orElseThrow(() -> new IllegalArgumentException("Пользователь не был найден"));
         Building building = buildingRepository.findById(buildingId)
             .orElseThrow(() -> new IllegalArgumentException("Здание не найдено"));
 

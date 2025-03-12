@@ -140,7 +140,7 @@ public class BuildingController {
     }
 
     @PostMapping("/deleteReview")
-    public String deleteReview(@PathVariable Long id, @RequestParam Long reviewId, Authentication authentication) {
+    public String deleteReview(@RequestParam Long id, @RequestParam Long reviewId, Authentication authentication) {
         User currentUser = userService.findByUsername(authentication.getName()).orElse(null);
         if (currentUser != null) {
             Review review = reviewService.getReviewById(reviewId).orElseThrow(() ->

@@ -1,8 +1,6 @@
 package com.example.findbuilding.services;
 
-import com.example.findbuilding.models.Building;
 import com.example.findbuilding.models.User;
-import com.example.findbuilding.repositories.BuildingRepository;
 import com.example.findbuilding.repositories.ReviewRepository;
 import com.example.findbuilding.repositories.UserRepository;
 import com.example.findbuilding.utilits.CoordinateGenerator;
@@ -17,14 +15,12 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
-    private final BuildingRepository buildingRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ReviewRepository reviewRepository, BuildingRepository buildingRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ReviewRepository reviewRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.reviewRepository = reviewRepository;
-        this.buildingRepository = buildingRepository;
     }
 
     public List<User> getAllUsers() {
