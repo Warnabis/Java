@@ -59,7 +59,7 @@ public class BuildingController {
 
     @GetMapping("/{id}")
     public String getBuildingById(@PathVariable Long id, Model model) {
-        long startTime = System.nanoTime(); // Засекаем время начала
+        long startTime = System.nanoTime();
         log.info("Запрос информации о здании ID: {}", id);
 
         Building building = buildingCacheService.getCachedBuilding(id);
