@@ -6,6 +6,8 @@ import com.example.findbuilding.models.User;
 import com.example.findbuilding.services.BuildingService;
 import com.example.findbuilding.services.UserService;
 import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -13,7 +15,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+@Slf4j
 @Controller
 public class MainController {
 
@@ -73,5 +77,20 @@ public class MainController {
         userService.registerUser(user);
         return "redirect:/";
     }
+
+    @GetMapping("/top")
+    public String getTopBuildings(@RequestParam(name = "native", required = false, defaultValue = "false") boolean useNativeQuery, Model model) {
+        long startTime = System.nanoTime();
+
+        List<Building> topBuildings = buildingService.getTopBuildings(useNativeQuery);
+        model.addAttribute("buildings", topBuildings);
+        model.addAttribute("useNative", useNativeQuery);
+
+        long duration = (System.nanoTime() - startTime) / 1_000_000;
+        log.info("Запрос топ-зданий выполнен за {} мс", duration);
+
+        return "topBuildings";
+    }
+
 
 }

@@ -3,11 +3,14 @@ package com.example.findbuilding.controllers;
 import com.example.findbuilding.models.Building;
 import com.example.findbuilding.models.Review;
 import com.example.findbuilding.models.User;
+import com.example.findbuilding.services.BuildingCacheService;
 import com.example.findbuilding.services.BuildingService;
 import com.example.findbuilding.services.ReviewService;
 import com.example.findbuilding.services.UserService;
 import java.util.List;
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+@Slf4j
 @Controller
 @RequestMapping("/building")
 public class BuildingController {
@@ -26,14 +30,16 @@ public class BuildingController {
     private final BuildingService buildingService;
     private final ReviewService reviewService;
     private final UserService userService;
+    public final BuildingCacheService buildingCacheService;
 
     private static final String REDIRECT_BUILDING = "redirect:/building";
 
     public BuildingController(BuildingService buildingService,
-                              ReviewService reviewService, UserService userService) {
+                              ReviewService reviewService, UserService userService, BuildingCacheService buildingCacheService ) {
         this.buildingService = buildingService;
         this.reviewService = reviewService;
         this.userService = userService;
+        this.buildingCacheService = buildingCacheService;
     }
 
     @GetMapping
@@ -53,16 +59,33 @@ public class BuildingController {
 
     @GetMapping("/{id}")
     public String getBuildingById(@PathVariable Long id, Model model) {
-        Optional<Building> buildingOpt = buildingService.getBuildingById(id);
-        if (buildingOpt.isPresent()) {
-            Building building = buildingOpt.get();
-            building.updateRating();
-            model.addAttribute("building", building);
-            model.addAttribute("reviews", building.getReviews());
-            model.addAttribute("newReview", new Review());
-            return "buildingDetails";
+        long startTime = System.nanoTime(); // Засекаем время начала
+        log.info("Запрос информации о здании ID: {}", id);
+
+        Building building = buildingCacheService.getCachedBuilding(id);
+        if (building == null) {
+            log.info("Здание ID: {} не найдено в кэше, загружаем из БД", id);
+            Optional<Building> buildingOpt = buildingService.getBuildingById(id);
+            if (buildingOpt.isEmpty()) {
+                log.warn("Здание ID: {} не найдено в базе данных", id);
+                return REDIRECT_BUILDING;
+            }
+            building = buildingOpt.get();
+            buildingCacheService.cacheBuilding(id, building);
+            log.info("Здание ID: {} добавлено в кэш", id);
+        } else {
+            log.info("Здание ID: {} загружено из кэша", id);
         }
-        return REDIRECT_BUILDING;
+
+        long duration = (System.nanoTime() - startTime) / 1_000_000;
+        log.info("Время открытия здания ID: {} составило {} мс", id, duration);
+
+        building.updateRating();
+        model.addAttribute("building", building);
+        model.addAttribute("reviews", building.getReviews());
+        model.addAttribute("newReview", new Review());
+
+        return "buildingDetails";
     }
 
     @PostMapping("/{id}/addReview")
@@ -70,46 +93,8 @@ public class BuildingController {
                             @RequestParam("rating") int rating,
                             @RequestParam("comment") String comment,
                             Model model) {
-
-        Optional<Building> buildingOpt = buildingService.getBuildingById(id);
-        if (buildingOpt.isEmpty()) {
-            model.addAttribute("error", "Здание не найдено.");
-            return REDIRECT_BUILDING;
-        }
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        User user = userService.findByUsername(username).orElse(null);
-        if (user == null) {
-            model.addAttribute("error", "Пользователь не найден.");
-            return "redirect:/login";
-        }
-
-        Building building = buildingOpt.get();
-        Review newReview = new Review();
-        newReview.setRating(rating);
-        newReview.setComment(comment);
-        newReview.setUser(user);
-        newReview.setBuilding(building);
-
-        reviewService.saveReview(newReview);
-
-        building.updateRating();
-        buildingService.saveBuilding(building);
-
-        if (!user.getFavoriteBuildings().contains(building)) {
-            user.getFavoriteBuildings().add(building);
-            userService.saveUser(user);
-        }
-
-        model.addAttribute("building", building);
-        model.addAttribute("reviews", building.getReviews());
-        model.addAttribute("newReview", new Review());
-
-        return "redirect:/building/" + id;
+        return reviewService.addReviewToBuilding(id, rating, comment, model);
     }
-
 
     @PostMapping("/create")
     public String createBuilding(@ModelAttribute Building building) {
@@ -139,17 +124,20 @@ public class BuildingController {
         return REDIRECT_BUILDING;
     }
 
-    @PostMapping("/deleteReview")
-    public String deleteReview(@RequestParam Long id, @RequestParam Long reviewId, Authentication authentication) {
+    @PostMapping("/{id}/deleteReview")
+    public String deleteReview(@PathVariable Long id,
+                               @RequestParam Long reviewId, Authentication authentication) {
+
         User currentUser = userService.findByUsername(authentication.getName()).orElse(null);
         if (currentUser != null) {
-            Review review = reviewService.getReviewById(reviewId).orElseThrow(() ->
-              new IllegalArgumentException("Отзыв не найден"));
+            Review review = reviewService.getReviewById(reviewId).orElseThrow(()
+              -> new IllegalArgumentException("Отзыв не найден"));
             if (review.getUser().equals(currentUser)) {
                 reviewService.deleteReview(reviewId);
             }
         }
-        return "redirect:/building" + id;
+
+        return "redirect:/building/" + id;
     }
 
 }

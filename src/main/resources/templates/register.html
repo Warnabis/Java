@@ -1,14 +1,79 @@
+<!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Регистрация</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            background-color: #4caf50;
+            color: white;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-<h2>Регистрация</h2>
-<form th:action="@{/register}" method="post" th:object="${user}">
-    <label>Логин: <input type="text" th:field="*{username}"></label><br>
-    <label>Пароль: <input type="password" th:field="*{password}"></label><br>
-    <label>Пароль администратора: <input type="password" name="adminPassword"></label><br>
-    <button type="submit">Зарегистрироваться</button>
-</form>
+
+<div class="container">
+    <h2>Регистрация</h2>
+    <form th:action="@{/register}" method="post" th:object="${user}">
+        <label>Логин</label>
+        <input type="text" th:field="*{username}">
+
+        <label>Пароль</label>
+        <input type="password" th:field="*{password}">
+
+        <label>Пароль администратора</label>
+        <input type="password" name="adminPassword">
+
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+</div>
+
 </body>
 </html>

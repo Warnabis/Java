@@ -4,77 +4,139 @@
     <meta charset="UTF-8">
     <title>Список зданий</title>
     <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], input[type="number"], button {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+
+        button {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #d4d4d4;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
+
         th, td {
-            border: 1px solid black;
-            padding: 8px;
+            border: 1px solid #ddd;
+            padding: 12px;
             text-align: center;
         }
+
         th {
             background-color: #f2f2f2;
         }
+
         .actions {
             display: flex;
             gap: 5px;
             justify-content: center;
         }
-        .actions form {
-            display: inline;
+
+        .btn-submit {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .btn-delete {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-back {
+            background-color: #2196f3;
+            color: white;
         }
     </style>
 </head>
 <body>
-<h1>Список зданий</h1>
 
-<form action="#" th:action="@{/building/create}" method="post">
-    <label for="name">Название</label>
-    <input type="text" id="name" name="name" required>
+<div class="container">
+    <h1>Список зданий</h1>
 
-    <label for="address">Адрес</label>
-    <input type="text" id="address" name="address" required>
+    <form action="#" th:action="@{/building/create}" method="post">
+        <label for="name">Название</label>
+        <input type="text" id="name" name="name" required>
 
-    <label for="workingHours">Часы работы</label>
-    <input type="text" id="workingHours" name="workingHours">
+        <label for="address">Адрес</label>
+        <input type="text" id="address" name="address" required>
 
-    <label for="coordinateX">Координата X</label>
-    <input type="number" id="coordinateX" name="coordinateX">
+        <label for="workingHours">Часы работы</label>
+        <input type="text" id="workingHours" name="workingHours">
 
-    <label for="coordinateZ">Координата Z</label>
-    <input type="number" id="coordinateZ" name="coordinateZ">
+        <label for="coordinateX">Координата X</label>
+        <input type="number" id="coordinateX" name="coordinateX">
 
-    <button type="submit">Добавить здание</button>
-</form>
+        <label for="coordinateZ">Координата Z</label>
+        <input type="number" id="coordinateZ" name="coordinateZ">
 
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Название</th>
-        <th>Адрес</th>
-        <th>Часы работы</th>
-        <th>Координаты</th>
-        <th>Действия</th>
-    </tr>
-    <tr th:each="building : ${buildings}">
-        <form th:action="@{/building/update/{id}(id=${building.id})}" method="post">
-            <td th:text="${building.id}"></td>
-            <td><input type="text" name="name" th:value="${building.name}" required></td>
-            <td><input type="text" name="address" th:value="${building.address}" required></td>
-            <td><input type="text" name="workingHours" th:value="${building.workingHours}"></td>
-            <td><input type="number" name="coordinateX" th:value="${building.coordinateX}">, <input type="number" name="coordinateZ" th:value="${building.coordinateZ}"></td>
-            <td class="actions">
-                <button type="submit">Обновить</button>
-        </form>
-        <form th:action="@{/building/delete/{id}(id=${building.id})}" method="post">
-            <input type="hidden" name="_method" value="delete">
-            <button type="submit">Удалить</button>
-        </form>
-        </td>
-    </tr>
-</table>
-<a href="/">Вернуться на главную</a>
+        <button class="btn-submit" type="submit">Добавить здание</button>
+    </form>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Адрес</th>
+            <th>Часы работы</th>
+            <th>Координаты</th>
+            <th>Действия</th>
+        </tr>
+        <tr th:each="building : ${buildings}">
+            <form th:action="@{/building/update/{id}(id=${building.id})}" method="post">
+                <td th:text="${building.id}"></td>
+                <td><input type="text" name="name" th:value="${building.name}" required></td>
+                <td><input type="text" name="address" th:value="${building.address}" required></td>
+                <td><input type="text" name="workingHours" th:value="${building.workingHours}"></td>
+                <td><input type="number" name="coordinateX" th:value="${building.coordinateX}">,
+                    <input type="number" name="coordinateZ" th:value="${building.coordinateZ}">
+                </td>
+                <td class="actions">
+                    <button class="btn-submit" type="submit">Обновить</button>
+            </form>
+            <form th:action="@{/building/delete/{id}(id=${building.id})}" method="post">
+                <input type="hidden" name="_method" value="delete">
+                <button class="btn-delete" type="submit">Удалить</button>
+            </form>
+            </td>
+        </tr>
+    </table>
+    <button class="btn-back" onclick="location.href='/'">Вернуться на главную</button>
+</div>
+
 </body>
 </html>

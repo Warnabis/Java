@@ -1,41 +1,101 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Здание <span th:text="${building.name}"></span></title>
+    <title th:text="'Здание ' + ${building.name}"></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .building-info {
+            text-align: center;
+        }
+        .reviews {
+            margin-top: 20px;
+        }
+        .review {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        .review p {
+            margin: 5px 0;
+        }
+        .review strong {
+            color: #2196f3;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
 
-<h1 th:text="${building.name}"></h1>
-<p th:text="${building.address}"></p>
-<p>Часы работы: <span th:text="${building.workingHours}"></span></p>
-<p>Рейтинг: <span th:text="${building.rating}"></span></p>
+<div class="container">
+    <div class="building-info">
+        <h1 th:text="${building.name}"></h1>
+        <p><strong>Адрес:</strong> <span th:text="${building.address}"></span></p>
+        <p><strong>Часы работы:</strong> <span th:text="${building.workingHours}"></span></p>
+        <p><strong>Рейтинг:</strong> <span th:text="${building.rating}"></span></p>
+    </div>
 
-<h2>Отзывы</h2>
-<ul>
-    <li th:each="review : ${reviews}">
-        <p><strong th:text="${review.user.username}"></strong>: <span th:text="${review.rating}"></span>/5</p>
-        <p th:text="${review.comment}"></p>
-        <div th:if="${review.user.username == username}">
-            <form th:action="@{/building/{id}/deleteReview(id=${building.id})}" method="post">
-                <input type="hidden" name="reviewId" th:value="${review.id}">
-                <button type="submit">Удалить отзыв</button>
-            </form>
+    <div class="reviews">
+        <h2>Отзывы</h2>
+        <div class="review" th:each="review : ${reviews}">
+            <p><strong th:text="${review.user.username}"></strong>: <span th:text="${review.rating}"></span>/5</p>
+            <p th:text="${review.comment}"></p>
+            <div th:if="${review.user.username == username}">
+                <form th:action="@{/building/{id}/deleteReview(id=${building.id})}" method="post">
+                    <input type="hidden" name="reviewId" th:value="${review.id}">
+                    <button class="btn btn-delete" type="submit">Удалить отзыв</button>
+                </form>
+            </div>
         </div>
-    </li>
-</ul>
+    </div>
 
-<h3>Оставить отзыв</h3>
-<form th:action="@{/building/{id}/addReview(id=${building.id})}" method="post" th:object="${newReview}">
-    <label for="rating">Рейтинг (1-5):</label>
-    <input type="number" id="rating" name="rating" min="1" max="5" th:value="*{rating}" required><br>
+    <div class="add-review">
+        <h3>Оставить отзыв</h3>
+        <form th:action="@{/building/{id}/addReview(id=${building.id})}" method="post" th:object="${newReview}">
+            <div class="form-group">
+                <label for="rating">Рейтинг (1-5):</label>
+                <input type="number" id="rating" name="rating" min="1" max="5" th:value="*{rating}" required>
+            </div>
 
-    <label for="comment">Комментарий:</label>
-    <textarea id="comment" name="comment" th:value="*{comment}" required></textarea><br>
+            <div class="form-group">
+                <label for="comment">Комментарий:</label>
+                <textarea id="comment" name="comment" rows="4" th:text="*{comment}" required></textarea>
+            </div>
 
-    <button type="submit">Отправить отзыв</button>
-</form>
+            <button class="btn btn-review" type="submit">Отправить отзыв</button>
+        </form>
+    </div>
 
-<a href="/" class="btn btn-primary">Вернуться на главную</a>
+    <div class="btn-container">
+        <button class="btn btn-back" onclick="location.href='/'">Вернуться на главную</button>
+    </div>
+</div>
 
 </body>
 </html>

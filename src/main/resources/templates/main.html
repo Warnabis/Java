@@ -6,35 +6,56 @@
 </head>
 <body>
 <header>
-    <h1>FindBuilding</h1>
-    <div th:if="${isAuthenticated}">
-        <p>Вы вошли как: <span th:text="${username}"></span></p>
-        <form action="/logout" method="post">
-            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
-            <button type="submit">Выйти</button>
-        </form>
-        <a th:if="${isAdmin}" href="/building"><button>Управление зданиями</button></a>
-        <form action="/users/deleteAccount" method="post">
-            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
-            <button type="submit">Удалить аккаунт</button>
-        </form>
-    </div>
-    <div th:unless="${isAuthenticated}">
-        <a href="/login"><button>Войти</button></a>
-        <a href="/registerMain"><button>Регистрация</button></a>
+    <div class="container">
+        <h1>FindBuilding</h1>
+        <div th:if="${isAuthenticated}" class="auth-section">
+            <p>Вы вошли как: <span th:text="${username}"></span></p>
+            <div class="button-group">
+                <form action="/logout" method="post">
+                    <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+                    <button class="btn btn-logout" type="submit">Выйти</button>
+                </form>
+                <a th:if="${isAdmin}" href="/building">
+                    <button class="btn btn-admin">Управление зданиями</button>
+                </a>
+                <a th:if="${isAdmin}" href="/sql">
+                    <button class="btn btn-sql">SQL Запросы</button>
+                </a>
+                <form action="/users/deleteAccount" method="post">
+                    <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+                    <button class="btn btn-delete">Удалить аккаунт</button>
+                </form>
+            </div>
+        </div>
+        <div th:unless="${isAuthenticated}">
+            <a href="/login">
+                <button class="btn btn-login">Войти</button>
+            </a>
+            <a href="/registerMain">
+                <button class="btn btn-register">Регистрация</button>
+            </a>
+        </div>
     </div>
 </header>
 <main>
-    <h2>Ближайшие здания</h2>
-    <div class="building-list">
-        <div class="building" th:each="building : ${buildings}">
-            <h3 th:text="${building.name}"></h3>
-            <p>Адрес: <span th:text="${building.address}"></span></p>
-            <p>Рейтинг: <span th:text="${building.rating}"></span></p>
-            <p>Время работы: <span th:text="${building.workingHours}"></span></p>
-            <a th:if="${isAuthenticated}" th:href="@{/building/{id}(id=${building.id})}">
-                <button>Оставить отзыв</button>
+    <div class="container">
+        <h2>Ближайшие здания</h2>
+        <div class="top-buildings-section">
+            <a href="/top">
+                <button class="btn btn-top">Показать топ-здания</button>
             </a>
+        </div>
+
+        <div class="building-list">
+            <div class="building" th:each="building : ${buildings}">
+                <h3 th:text="${building.name}"></h3>
+                <p>Адрес: <span th:text="${building.address}"></span></p>
+                <p>Рейтинг: <span th:text="${building.rating}"></span></p>
+                <p>Время работы: <span th:text="${building.workingHours}"></span></p>
+                <a th:if="${isAuthenticated}" th:href="@{/building/{id}(id=${building.id})}">
+                    <button class="btn btn-review">Оставить отзыв</button>
+                </a>
+            </div>
         </div>
     </div>
 </main>
